@@ -140,12 +140,14 @@ export function useBarcodeScanner({
 
     // Clean up
     return () => {
-      if (scanner) {
-        scanner.stop();
+      if (newScanner) {
+        newScanner.stop();
       }
       document.removeEventListener("barcodeScan", handleBarcodeScan);
     };
-  }, [onScan, onError, toast]);
+    // Only run this effect once on component mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const startScanning = useCallback(async () => {
     if (scanner) {

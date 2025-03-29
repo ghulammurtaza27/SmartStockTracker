@@ -1,0 +1,37 @@
+Warning: React does not recognize the &#x60;indicatorClassName&#x60; prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase &#x60;indicatorclassname&#x60; instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+    at div
+    at https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RLTE5R7I.js?v=4df6e6f9:41:13
+    at Provider (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-progress.js?v=4df6e6f9:30:15)
+    at https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-progress.js?v=4df6e6f9:90:7
+    at _c (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/components/ui/progress.tsx:21:11)
+    at div
+    at div
+    at div
+    at _c9 (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/components/ui/card.tsx:20:11)
+    at ReplenishmentStats (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/components/dashboard/replenishment-stats.tsx:23:42)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/pages/dashboard.tsx:30:37)
+    at Route (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=4df6e6f9:323:16)
+    at Switch (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=4df6e6f9:379:17)
+    at App (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/App.tsx?v=_yCuMykPd3QzXgqMAIghN:36:27)
+    at AuthProvider (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/hooks/use-auth.tsx?v=_yCuMykPd3QzXgqMAIghN:26:32)
+    at QueryClientProvider (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=4df6e6f9:2805:3)
+Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn&#x27;t have a dependency array, or one of the dependencies changes on every render.
+    at BarcodeScanner (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/components/dashboard/barcode-scanner.tsx:26:21)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/pages/dashboard.tsx:30:37)
+    at Route (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=4df6e6f9:323:16)
+    at Switch (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=4df6e6f9:379:17)
+    at App (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/App.tsx?v=_yCuMykPd3QzXgqMAIghN:36:27)
+    at AuthProvider (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/hooks/use-auth.tsx?v=_yCuMykPd3QzXgqMAIghN:26:32)
+    at QueryClientProvider (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=4df6e6f9:2805:3)
