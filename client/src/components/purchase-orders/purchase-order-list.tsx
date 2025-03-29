@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { 
   Card,
   CardContent,
@@ -38,6 +39,7 @@ type PurchaseOrderListProps = {
 
 export default function PurchaseOrderList({ status }: PurchaseOrderListProps) {
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [selectedOrder, setSelectedOrder] = useState<PurchaseOrder | null>(null);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [newStatus, setNewStatus] = useState<string>("");
@@ -185,18 +187,18 @@ export default function PurchaseOrderList({ status }: PurchaseOrderListProps) {
                       <TableCell className="font-medium text-primary">
                         {order.orderNumber}
                       </TableCell>
-                      <TableCell>{getSupplierName(order.supplierId)}</TableCell>
-                      <TableCell>{format(new Date(order.orderDate), "MMM dd, yyyy")}</TableCell>
+                      <TableCell>{getSupplierName(order.supplierId || 0)}</TableCell>
+                      <TableCell>{format(new Date(order.orderDate || new Date()), "MMM dd, yyyy")}</TableCell>
                       <TableCell>
                         {order.expectedDeliveryDate 
                           ? format(new Date(order.expectedDeliveryDate), "MMM dd, yyyy")
                           : "Not specified"
                         }
                       </TableCell>
-                      <TableCell>${order.totalValue.toFixed(2)}</TableCell>
+                      <TableCell>${(order.totalValue || 0).toFixed(2)}</TableCell>
                       <TableCell>
-                        <Badge className={getStatusBadgeVariant(order.status)}>
-                          {formatStatus(order.status)}
+                        <Badge className={getStatusBadgeVariant(order.status || 'pending')}>
+                          {formatStatus(order.status || 'pending')}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -211,18 +213,23 @@ export default function PurchaseOrderList({ status }: PurchaseOrderListProps) {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end">
-                          <Button variant="ghost" size="sm" className="h-8 w-8">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 w-8"
+                            onClick={() => navigate(`/purchase-orders/${order.id}`)}
+                          >
                             <span className="material-icons text-primary">visibility</span>
                           </Button>
                           
-                          {getStatusOptions(order.status).length > 0 && (
-                            <div className="relative">
+                          {getStatusOptions(order.status || "pending").length > 0 && (
+                            <div className="relative group">
                               <Button variant="ghost" size="sm" className="h-8">
                                 <span className="material-icons">more_vert</span>
                               </Button>
                               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 hidden group-hover:block">
                                 <div className="py-1">
-                                  {getStatusOptions(order.status).map((statusOption) => (
+                                  {getStatusOptions(order.status || "pending").map((statusOption) => (
                                     <button
                                       key={statusOption}
                                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
@@ -264,7 +271,7 @@ export default function PurchaseOrderList({ status }: PurchaseOrderListProps) {
             <AlertDialogDescription>
               Are you sure you want to change the status of order{" "}
               <span className="font-medium">{selectedOrder?.orderNumber}</span> from{" "}
-              <span className="font-medium">{selectedOrder && formatStatus(selectedOrder.status)}</span> to{" "}
+              <span className="font-medium">{selectedOrder && formatStatus(selectedOrder.status || 'pending')}</span> to{" "}
               <span className="font-medium">{formatStatus(newStatus)}</span>?
               
               {newStatus === "completed" && (

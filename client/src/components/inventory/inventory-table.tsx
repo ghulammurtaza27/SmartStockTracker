@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { 
   Table, 
   TableBody, 
@@ -17,6 +18,7 @@ import { Product, Category, Supplier } from "@shared/schema";
 
 export function InventoryTable() {
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   
   const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
@@ -72,9 +74,9 @@ export function InventoryTable() {
   const getStockStatus = (product: Product) => {
     if (product.currentStock <= 0) {
       return { label: "Out of Stock", variant: "destructive" };
-    } else if (product.currentStock <= product.minStockLevel) {
+    } else if (product.currentStock <= (product.minStockLevel || 0)) {
       return { label: "Critical", variant: "destructive" };
-    } else if (product.currentStock <= product.reorderPoint) {
+    } else if (product.currentStock <= (product.reorderPoint || 0)) {
       return { label: "Low", variant: "warning" };
     } else {
       return { label: "In Stock", variant: "success" };
@@ -88,8 +90,8 @@ export function InventoryTable() {
       product.name.toLowerCase().includes(searchTermLower) ||
       product.barcode?.toLowerCase().includes(searchTermLower) ||
       product.sku?.toLowerCase().includes(searchTermLower) ||
-      getCategoryName(product.categoryId).toLowerCase().includes(searchTermLower) ||
-      getSupplierName(product.supplierId).toLowerCase().includes(searchTermLower)
+      getCategoryName(product.categoryId || undefined).toLowerCase().includes(searchTermLower) ||
+      getSupplierName(product.supplierId || undefined).toLowerCase().includes(searchTermLower)
     );
   });
 
@@ -142,8 +144,8 @@ export function InventoryTable() {
                       <div>SKU: {product.sku || 'N/A'}</div>
                       <div className="text-xs opacity-70">Barcode: {product.barcode || 'N/A'}</div>
                     </TableCell>
-                    <TableCell>{getCategoryName(product.categoryId)}</TableCell>
-                    <TableCell>{getSupplierName(product.supplierId)}</TableCell>
+                    <TableCell>{getCategoryName(product.categoryId || undefined)}</TableCell>
+                    <TableCell>{getSupplierName(product.supplierId || undefined)}</TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <span>{product.currentStock} {product.unit}</span>
@@ -171,12 +173,38 @@ export function InventoryTable() {
                     <TableCell>${product.price.toFixed(2)}</TableCell>
                     <TableCell>{product.location || 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-primary">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-primary"
+                        onClick={() => navigate(`/products/${product.id}`)}
+                      >
                         <span className="material-icons">visibility</span>
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-neutral-dark">
-                        <span className="material-icons">more_vert</span>
-                      </Button>
+                      <div className="relative inline-block group">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-neutral-dark">
+                          <span className="material-icons">more_vert</span>
+                        </Button>
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 hidden group-hover:block">
+                          <div className="py-1">
+                            <button
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                              onClick={() => navigate(`/products/${product.id}/edit`)}
+                            >
+                              Edit Product
+                            </button>
+                            <button
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                              onClick={() => {
+                                // Create a purchase order for this product
+                                navigate(`/purchase-orders/new?product=${product.id}`);
+                              }}
+                            >
+                              Order More
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
