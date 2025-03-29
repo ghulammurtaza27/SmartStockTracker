@@ -22,8 +22,20 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
   const [addProductOpen, setAddProductOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   
+  // Define types for inventory summary
+  interface InventorySummary {
+    totalProducts: number;
+    healthyStockCount: number;
+    lowStockCount: number;
+    outOfStockCount: number;
+    totalInventoryValue: number;
+    pendingOrdersCount: number;
+    inProgressOrdersCount: number;
+    automatedOrdersCount: number;
+  }
+  
   // Get analytics summary
-  const { data: inventorySummary } = useQuery({
+  const { data: inventorySummary } = useQuery<InventorySummary>({
     queryKey: ["/api/analytics/inventory-summary"],
   });
 

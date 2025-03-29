@@ -67,53 +67,55 @@ export default function PurchaseOrdersPage({ user, onLogout }: PurchaseOrdersPag
         {/* Tab Navigation */}
         <div className="bg-white border-b px-4 md:px-6 flex items-center justify-between">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="bg-transparent">
-              <TabsTrigger 
-                value="all" 
-                className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            <div className="relative">
+              <TabsList className="bg-transparent">
+                <TabsTrigger 
+                  value="all" 
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+                >
+                  All Orders
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="pending" 
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+                >
+                  Pending
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="in_progress" 
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+                >
+                  In Progress
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="completed" 
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+                >
+                  Completed
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="draft" 
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+                >
+                  Draft
+                </TabsTrigger>
+              </TabsList>
+              
+              <Button
+                onClick={handleAutoReplenish}
+                variant="outline"
+                size="sm"
+                className="ml-2 absolute right-4 top-2"
+                disabled={autoReplenishMutation.isPending}
               >
-                All Orders
-              </TabsTrigger>
-              <TabsTrigger 
-                value="pending" 
-                className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-              >
-                Pending
-              </TabsTrigger>
-              <TabsTrigger 
-                value="in_progress" 
-                className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-              >
-                In Progress
-              </TabsTrigger>
-              <TabsTrigger 
-                value="completed" 
-                className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-              >
-                Completed
-              </TabsTrigger>
-              <TabsTrigger 
-                value="draft" 
-                className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-              >
-                Draft
-              </TabsTrigger>
-            </TabsList>
-          
-            <Button
-              onClick={handleAutoReplenish}
-              variant="outline"
-              size="sm"
-              className="ml-2 absolute right-4 top-2"
-              disabled={autoReplenishMutation.isPending}
-            >
-              <span className="material-icons mr-1 text-sm">
-                auto_awesome
-              </span>
-              <span className="hidden md:inline">
-                {autoReplenishMutation.isPending ? "Creating..." : "Auto-Generate"}
-              </span>
-            </Button>
+                <span className="material-icons mr-1 text-sm">
+                  auto_awesome
+                </span>
+                <span className="hidden md:inline">
+                  {autoReplenishMutation.isPending ? "Creating..." : "Auto-Generate"}
+                </span>
+              </Button>
+            </div>
             
             <div className="p-4 md:p-6">
               <TabsContent value="all" className="mt-0">

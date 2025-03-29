@@ -82,7 +82,7 @@ export default function ForecastingPage({ user, onLogout }: ForecastingPageProps
       return Array.from({ length: 7 }).map((_, i) => ({
         date: format(addDays(startDate, i), 'MM/dd'),
         name: product.name,
-        forecast: Math.round((Math.random() * 5) + (product.reorderPoint / 4))
+        forecast: Math.round((Math.random() * 5) + ((product.reorderPoint ?? 5) / 4))
       }));
     });
   };
@@ -300,8 +300,8 @@ export default function ForecastingPage({ user, onLogout }: ForecastingPageProps
                           <tr key={product.id} className="hover:bg-gray-50">
                             <td className="p-2 border">{product.name}</td>
                             <td className="p-2 border">{product.currentStock} {product.unit}</td>
-                            <td className="p-2 border">{Math.round(product.reorderQuantity * 0.8)} {product.unit}</td>
-                            <td className="p-2 border">{product.reorderQuantity} {product.unit}</td>
+                            <td className="p-2 border">{Math.round((product.reorderQuantity ?? 10) * 0.8)} {product.unit}</td>
+                            <td className="p-2 border">{product.reorderQuantity ?? 10} {product.unit}</td>
                             <td className="p-2 border">
                               <div className="flex items-center">
                                 <div className="w-20 bg-gray-200 rounded-full h-2 mr-2">
