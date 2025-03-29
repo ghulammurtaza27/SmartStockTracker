@@ -99,28 +99,40 @@ export default function PurchaseOrdersPage({ user, onLogout }: PurchaseOrdersPag
                 Draft
               </TabsTrigger>
             </TabsList>
-          </Tabs>
           
-          <Button
-            onClick={handleAutoReplenish}
-            variant="outline"
-            size="sm"
-            className="ml-2"
-            disabled={autoReplenishMutation.isPending}
-          >
-            <span className="material-icons mr-1 text-sm">
-              auto_awesome
-            </span>
-            <span className="hidden md:inline">
-              {autoReplenishMutation.isPending ? "Creating..." : "Auto-Generate"}
-            </span>
-          </Button>
-        </div>
-        
-        <div className="p-4 md:p-6">
-          <TabsContent value={activeTab} className="mt-0">
-            <PurchaseOrderList status={activeTab === "all" ? undefined : activeTab} />
-          </TabsContent>
+            <Button
+              onClick={handleAutoReplenish}
+              variant="outline"
+              size="sm"
+              className="ml-2 absolute right-4 top-2"
+              disabled={autoReplenishMutation.isPending}
+            >
+              <span className="material-icons mr-1 text-sm">
+                auto_awesome
+              </span>
+              <span className="hidden md:inline">
+                {autoReplenishMutation.isPending ? "Creating..." : "Auto-Generate"}
+              </span>
+            </Button>
+            
+            <div className="p-4 md:p-6">
+              <TabsContent value="all" className="mt-0">
+                <PurchaseOrderList status={undefined} />
+              </TabsContent>
+              <TabsContent value="pending" className="mt-0">
+                <PurchaseOrderList status="pending" />
+              </TabsContent>
+              <TabsContent value="in_progress" className="mt-0">
+                <PurchaseOrderList status="in_progress" />
+              </TabsContent>
+              <TabsContent value="completed" className="mt-0">
+                <PurchaseOrderList status="completed" />
+              </TabsContent>
+              <TabsContent value="draft" className="mt-0">
+                <PurchaseOrderList status="draft" />
+              </TabsContent>
+            </div>
+          </Tabs>
         </div>
       </div>
       
