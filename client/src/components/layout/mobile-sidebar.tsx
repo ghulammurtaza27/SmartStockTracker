@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { User } from "@shared/schema";
 
 type NavItem = {
   name: string;
@@ -19,9 +19,12 @@ const navItems: NavItem[] = [
   { name: "Settings", path: "/settings", icon: "settings" }
 ];
 
-export function MobileSidebar() {
+type MobileSidebarProps = {
+  user?: User;
+};
+
+export function MobileSidebar({ user }: MobileSidebarProps) {
   const [location] = useLocation();
-  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   // Close sidebar when location changes

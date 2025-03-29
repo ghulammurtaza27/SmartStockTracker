@@ -49,8 +49,8 @@ export default function SettingsPage({ user, onLogout }: SettingsPageProps) {
   
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <MobileSidebar />
+      <Sidebar user={user} />
+      <MobileSidebar user={user} />
       
       <div className="flex-1 overflow-auto md:pt-0 pt-16">
         <Header 

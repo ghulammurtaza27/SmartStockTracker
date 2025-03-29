@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
-import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { User } from "@shared/schema";
 
 type NavItem = {
   name: string;
@@ -18,9 +18,12 @@ const navItems: NavItem[] = [
   { name: "Settings", path: "/settings", icon: "settings" }
 ];
 
-export function Sidebar() {
+type SidebarProps = {
+  user?: User;
+};
+
+export function Sidebar({ user }: SidebarProps) {
   const [location] = useLocation();
-  const { user } = useAuth();
 
   return (
     <div className="bg-primary text-white w-64 flex-shrink-0 hidden md:flex flex-col h-screen">
