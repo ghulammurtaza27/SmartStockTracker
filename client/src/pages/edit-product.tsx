@@ -144,8 +144,8 @@ export default function EditProduct({ user, onLogout }: EditProductProps) {
         minStockLevel: data.minStockLevel ? parseFloat(data.minStockLevel) : null,
         reorderPoint: data.reorderPoint ? parseFloat(data.reorderPoint) : null,
         reorderQuantity: data.reorderQuantity ? parseFloat(data.reorderQuantity) : null,
-        categoryId: data.categoryId ? parseInt(data.categoryId) : null,
-        supplierId: data.supplierId ? parseInt(data.supplierId) : null,
+        categoryId: data.categoryId && data.categoryId !== "null" ? parseInt(data.categoryId) : null,
+        supplierId: data.supplierId && data.supplierId !== "null" ? parseInt(data.supplierId) : null,
       };
       
       const res = await apiRequest("PATCH", `/api/products/${productId}`, transformedData);
@@ -345,7 +345,7 @@ export default function EditProduct({ user, onLogout }: EditProductProps) {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="">None</SelectItem>
+                              <SelectItem value="null">None</SelectItem>
                               {categories?.map((category) => (
                                 <SelectItem key={category.id} value={category.id.toString()}>
                                   {category.name}
@@ -374,7 +374,7 @@ export default function EditProduct({ user, onLogout }: EditProductProps) {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="">None</SelectItem>
+                              <SelectItem value="null">None</SelectItem>
                               {suppliers?.map((supplier) => (
                                 <SelectItem key={supplier.id} value={supplier.id.toString()}>
                                   {supplier.name}
