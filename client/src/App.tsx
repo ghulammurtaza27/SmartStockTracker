@@ -10,6 +10,7 @@ import Inventory from "./pages/inventory";
 import PurchaseOrders from "./pages/purchase-orders";
 import PurchaseOrderDetails from "./pages/purchase-order-details";
 import ProductDetails from "./pages/product-details";
+import EditProduct from "./pages/edit-product";
 import Forecasting from "./pages/forecasting";
 import UserManagement from "./pages/user-management";
 import Settings from "./pages/settings";
@@ -142,6 +143,14 @@ function App() {
         <Route path="/products/:id">
           {user ? (
             <ProductDetails user={user} onLogout={handleLogout} />
+          ) : (
+            <LoginPage onLogin={handleLogin} onRegister={handleRegister} />
+          )}
+        </Route>
+        
+        <Route path="/products/:id/edit">
+          {user ? (
+            <EditProduct user={user} onLogout={handleLogout} />
           ) : (
             <LoginPage onLogin={handleLogin} onRegister={handleRegister} />
           )}
