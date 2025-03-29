@@ -8,6 +8,7 @@ import { apiRequest } from "./lib/queryClient";
 import Dashboard from "./pages/dashboard";
 import Inventory from "./pages/inventory";
 import PurchaseOrders from "./pages/purchase-orders";
+import PurchaseOrderDetails from "./pages/purchase-order-details";
 import Forecasting from "./pages/forecasting";
 import UserManagement from "./pages/user-management";
 import Settings from "./pages/settings";
@@ -124,6 +125,14 @@ function App() {
         <Route path="/purchase-orders">
           {user ? (
             <PurchaseOrders user={user} onLogout={handleLogout} />
+          ) : (
+            <LoginPage onLogin={handleLogin} onRegister={handleRegister} />
+          )}
+        </Route>
+        
+        <Route path="/purchase-orders/:id">
+          {user ? (
+            <PurchaseOrderDetails user={user} onLogout={handleLogout} />
           ) : (
             <LoginPage onLogin={handleLogin} onRegister={handleRegister} />
           )}
