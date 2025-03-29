@@ -9,6 +9,7 @@ import Dashboard from "./pages/dashboard";
 import Inventory from "./pages/inventory";
 import PurchaseOrders from "./pages/purchase-orders";
 import PurchaseOrderDetails from "./pages/purchase-order-details";
+import ProductDetails from "./pages/product-details";
 import Forecasting from "./pages/forecasting";
 import UserManagement from "./pages/user-management";
 import Settings from "./pages/settings";
@@ -133,6 +134,14 @@ function App() {
         <Route path="/purchase-orders/:id">
           {user ? (
             <PurchaseOrderDetails user={user} onLogout={handleLogout} />
+          ) : (
+            <LoginPage onLogin={handleLogin} onRegister={handleRegister} />
+          )}
+        </Route>
+        
+        <Route path="/products/:id">
+          {user ? (
+            <ProductDetails user={user} onLogout={handleLogout} />
           ) : (
             <LoginPage onLogin={handleLogin} onRegister={handleRegister} />
           )}
