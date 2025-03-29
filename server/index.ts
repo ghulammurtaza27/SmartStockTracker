@@ -37,6 +37,21 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Import and initialize database storage
+  const { storage } = await import("./storage");
+  
+  // Initialize database (create tables, seed initial data if needed)
+  if ('initializeDatabase' in storage) {
+    try {
+      log('Initializing database...');
+      await (storage as any).initializeDatabase();
+      log('Database initialized successfully');
+    } catch (error) {
+      log('Error initializing database: ' + error);
+      console.error('Database initialization failed:', error);
+    }
+  }
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
