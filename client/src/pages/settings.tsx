@@ -22,10 +22,15 @@ import {
 } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { User } from "@shared/schema";
 
-export default function SettingsPage() {
+type SettingsPageProps = {
+  user: User;
+  onLogout: () => Promise<void>;
+};
+
+export default function SettingsPage({ user, onLogout }: SettingsPageProps) {
   const { toast } = useToast();
-  const { user, logoutMutation } = useAuth();
   
   // State for demo settings
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -42,11 +47,6 @@ export default function SettingsPage() {
     });
   };
   
-  // Handle logout
-  const handleLogout = () => {
-    logoutMutation.mutate();
-  };
-  
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
@@ -56,6 +56,8 @@ export default function SettingsPage() {
         <Header 
           title="Settings" 
           subtitle="Configure your application preferences"
+          user={user}
+          onLogout={onLogout}
         />
         
         <div className="p-4 md:p-6">
@@ -331,10 +333,9 @@ export default function SettingsPage() {
                 <CardFooter className="flex justify-between">
                   <Button 
                     variant="destructive"
-                    onClick={handleLogout}
-                    disabled={logoutMutation.isPending}
+                    onClick={onLogout}
                   >
-                    {logoutMutation.isPending ? "Signing Out..." : "Sign Out"}
+                    Sign Out
                   </Button>
                   <Button onClick={handleSaveSettings}>Save Changes</Button>
                 </CardFooter>

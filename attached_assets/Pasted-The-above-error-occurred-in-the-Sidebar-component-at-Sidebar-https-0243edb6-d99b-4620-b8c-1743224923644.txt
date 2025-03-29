@@ -1,0 +1,27 @@
+The above error occurred in the <Sidebar> component:
+
+    at Sidebar (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/components/layout/sidebar.tsx:31:22)
+    at div
+    at Dashboard (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/pages/dashboard.tsx?t=1743224708984:30:37)
+    at Route (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=23f20f2d:323:16)
+    at Switch (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=23f20f2d:379:17)
+    at App (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/App.tsx?t=1743224860178&v=6T3U6JZc_V5Flwq14ZK-H:33:27)
+    at AuthProvider (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/hooks/use-auth.tsx?v=6T3U6JZc_V5Flwq14ZK-H:26:32)
+    at QueryClientProvider (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f035dfc7:2805:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+The above error occurred in the <MobileSidebar> component:
+
+    at MobileSidebar (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/components/layout/mobile-sidebar.tsx:32:22)
+    at div
+    at Dashboard (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/pages/dashboard.tsx?t=1743224708984:30:37)
+    at Route (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=23f20f2d:323:16)
+    at Switch (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=23f20f2d:379:17)
+    at App (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/App.tsx?t=1743224860178&v=6T3U6JZc_V5Flwq14ZK-H:33:27)
+    at AuthProvider (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/src/hooks/use-auth.tsx?v=6T3U6JZc_V5Flwq14ZK-H:26:32)
+    at QueryClientProvider (https://0243edb6-d99b-4620-b8c8-ceb4c59d8e08-00-15w1rj03los8i.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f035dfc7:2805:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+useAuth must be used within an AuthProvider

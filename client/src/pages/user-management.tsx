@@ -62,7 +62,12 @@ const createUserSchema = insertUserSchema
 
 type CreateUserForm = z.infer<typeof createUserSchema>;
 
-export default function UserManagementPage() {
+type UserManagementProps = {
+  user: User;
+  onLogout: () => Promise<void>;
+};
+
+export default function UserManagementPage({ user, onLogout }: UserManagementProps) {
   const { toast } = useToast();
   const { user: currentUser } = useAuth();
   const [createUserOpen, setCreateUserOpen] = useState(false);
@@ -142,6 +147,8 @@ export default function UserManagementPage() {
           showAddButton
           addButtonLabel="Add User"
           onAddClick={() => setCreateUserOpen(true)}
+          user={user}
+          onLogout={onLogout}
         />
         
         <div className="p-4 md:p-6">
