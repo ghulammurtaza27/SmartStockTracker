@@ -240,7 +240,9 @@ export class DatabaseStorage implements IStorage {
       .from(products)
       .where(and(
         eq(products.isActive, true),
-        lt(products.currentStock, products.reorderPoint || 0)
+        lt(products.currentStock, 
+          sql`COALESCE(${products.reorderPoint}, 0)`
+        )
       ));
   }
   
