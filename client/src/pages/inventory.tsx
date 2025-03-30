@@ -21,7 +21,7 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
   const { toast } = useToast();
   const [addProductOpen, setAddProductOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
-  
+
   // Define types for inventory summary
   interface InventorySummary {
     totalProducts: number;
@@ -33,7 +33,7 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
     inProgressOrdersCount: number;
     automatedOrdersCount: number;
   }
-  
+
   // Get analytics summary
   const { data: inventorySummary } = useQuery<InventorySummary>({
     queryKey: ["/api/analytics/inventory-summary"],
@@ -56,11 +56,17 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
     },
   });
 
+  const renderCSVUpload = () => {
+    // Replace this with the actual CSV upload component
+    return <div>CSV Upload Placeholder</div>;
+  };
+
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar user={user} />
       <MobileSidebar user={user} />
-      
+
       <div className="flex-1 overflow-auto md:pt-0 pt-16">
         <Header 
           title="Inventory" 
@@ -71,7 +77,7 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
           user={user}
           onLogout={onLogout}
         />
-        
+
         {/* Quick Actions Bar */}
         <div className="bg-white border-b px-4 md:px-6 py-2 flex items-center justify-between">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -81,7 +87,7 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
               <TabsTrigger value="critical">Critical Stock</TabsTrigger>
             </TabsList>
           </Tabs>
-          
+
           <Button
             onClick={isScanning ? stopScanning : startScanning}
             variant={isScanning ? "destructive" : "outline"}
@@ -96,8 +102,11 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
             </span>
           </Button>
         </div>
-        
-        <div className="p-4 md:p-6">
+
+        <div className="p-6">
+          {renderCSVUpload()}
+          <div className="flex justify-between items-center mb-6">
+          </div>
           {/* Inventory Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <Card className="p-4">
@@ -109,7 +118,7 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
                 <span className="material-icons text-primary bg-primary bg-opacity-10 p-2 rounded-full">inventory</span>
               </div>
             </Card>
-            
+
             <Card className="p-4">
               <div className="flex justify-between items-center">
                 <div>
@@ -119,7 +128,7 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
                 <span className="material-icons text-[#4CAF50] bg-[#4CAF50] bg-opacity-10 p-2 rounded-full">check_circle</span>
               </div>
             </Card>
-            
+
             <Card className="p-4">
               <div className="flex justify-between items-center">
                 <div>
@@ -129,7 +138,7 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
                 <span className="material-icons text-[#FB8C00] bg-[#FB8C00] bg-opacity-10 p-2 rounded-full">warning</span>
               </div>
             </Card>
-            
+
             <Card className="p-4">
               <div className="flex justify-between items-center">
                 <div>
@@ -140,12 +149,12 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
               </div>
             </Card>
           </div>
-          
+
           {/* Inventory Table */}
           <InventoryTable />
         </div>
       </div>
-      
+
       {/* Add Product Modal */}
       {addProductOpen && (
         <AddInventoryForm 
