@@ -13,7 +13,7 @@ import {
 import { generateOrderNumber } from "./utils";
 import { forecastDemand } from "./forecast";
 import multer from "multer";
-import csv from "csv-parse";
+import { parse } from "csv-parse";
 import { format } from "date-fns";
 
 const upload = multer({ dest: "uploads/" });
@@ -27,7 +27,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const records = [];
-      const parser = csv.parse({ columns: true, trim: true });
+      const parser = parse({ columns: true, trim: true });
       
       const fileStream = fs.createReadStream(req.file.path);
       
