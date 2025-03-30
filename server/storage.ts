@@ -216,7 +216,8 @@ export class DatabaseStorage implements IStorage {
       reorderPoint: insertProduct.reorderPoint || null,
       reorderQuantity: insertProduct.reorderQuantity || null,
       location: insertProduct.location || null,
-      isActive: insertProduct.isActive === undefined ? true : insertProduct.isActive
+      isActive: insertProduct.isActive === undefined ? true : insertProduct.isActive,
+      discountPercentage: insertProduct.discountPercentage || 0
     };
     
     const result = await db.insert(products).values(productToInsert).returning();
