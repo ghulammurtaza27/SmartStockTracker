@@ -56,6 +56,8 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
     },
   });
 
+  import CSVUpload from '@/components/inventory/csv-upload';
+
   const renderCSVUpload = () => {
     return <CSVUpload />;
   };
