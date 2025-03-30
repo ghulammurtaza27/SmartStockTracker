@@ -60,6 +60,8 @@ export const products = pgTable("products", {
   reorderQuantity: real("reorder_quantity").default(0),
   location: text("location"),
   isActive: boolean("is_active").default(true),
+  expiryDate: timestamp("expiry_date"),
+  discountPercentage: real("discount_percentage").default(0),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({

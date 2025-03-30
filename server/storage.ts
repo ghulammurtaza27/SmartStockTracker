@@ -244,6 +244,17 @@ export class DatabaseStorage implements IStorage {
         )
       );
   }
+
+  async getProductsNearExpiry(thresholdDate: Date): Promise<Product[]> {
+    return await db.select().from(products)
+      .where(
+        and(
+          eq(products.isActive, true),
+          lte(products.expiryDate, thresholdDate),
+          gt(products.expiryDate, new Date())
+        )
+      );
+  }
   
   // Transaction operations
   async createTransaction(insertTransaction: InsertTransaction): Promise<Transaction> {

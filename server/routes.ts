@@ -12,8 +12,69 @@ import {
 } from "@shared/schema";
 import { generateOrderNumber } from "./utils";
 import { forecastDemand } from "./forecast";
+import multer from "multer";
+import csv from "csv-parse";
+import { format } from "date-fns";
+
+const upload = multer({ dest: "uploads/" });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // CSV Upload endpoint
+  app.post("/api/products/upload-csv", upload.single("file"), async (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    try {
+      const records = [];
+      const parser = csv.parse({ columns: true, trim: true });
+      
+      const fileStream = fs.createReadStream(req.file.path);
+      
+      for await (const record of fileStream.pipe(parser)) {
+        const product = {
+          name: record.name,
+          description: record.description || null,
+          barcode: record.barcode || null,
+          sku: record.sku || null,
+          categoryId: record.categoryId ? parseInt(record.categoryId) : null,
+          supplierId: record.supplierId ? parseInt(record.supplierId) : null,
+          unit: record.unit || "each",
+          price: parseFloat(record.price) || 0,
+          currentStock: parseFloat(record.currentStock) || 0,
+          minStockLevel: record.minStockLevel ? parseFloat(record.minStockLevel) : null,
+          maxStockLevel: record.maxStockLevel ? parseFloat(record.maxStockLevel) : null,
+          reorderPoint: record.reorderPoint ? parseFloat(record.reorderPoint) : null,
+          reorderQuantity: record.reorderQuantity ? parseFloat(record.reorderQuantity) : null,
+          location: record.location || null,
+          expiryDate: record.expiryDate ? new Date(record.expiryDate) : null,
+        };
+        
+        const validatedData = insertProductSchema.parse(product);
+        records.push(await storage.createProduct(validatedData));
+      }
+      
+      // Clean up uploaded file
+      fs.unlinkSync(req.file.path);
+      
+      res.status(201).json({ 
+        message: `Successfully imported ${records.length} products`,
+        products: records 
+      });
+    } catch (error) {
+      res.status(400).json({ error: "Invalid CSV data" });
+    }
+  });
+
+  // Get products near expiry
+  app.get("/api/products/near-expiry", async (req, res) => {
+    const daysThreshold = parseInt(req.query.days as string) || 30;
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() + daysThreshold);
+    
+    const products = await storage.getProductsNearExpiry(thresholdDate);
+    res.json(products);
+  });
   // Set up authentication routes (/api/login, /api/register, etc.)
   setupAuth(app);
 
