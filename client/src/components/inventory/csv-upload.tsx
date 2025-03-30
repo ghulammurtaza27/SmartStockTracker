@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { Download, Upload } from "lucide-react";
 
 export function CSVUpload() {
   const [uploading, setUploading] = useState(false);
@@ -55,27 +56,48 @@ export function CSVUpload() {
     }
   };
 
+  const downloadTemplate = () => {
+    const headers = ["name", "description", "barcode", "sku", "categoryId", "supplierId", "unit", "price", "currentStock", "minStockLevel", "maxStockLevel", "reorderPoint", "reorderQuantity", "location"];
+    const csvContent = headers.join(",");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "product_template.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
-    <Card>
+    <Card className="mb-6">
       <CardHeader>
-        <CardTitle>Import Products</CardTitle>
+        <CardTitle className="text-xl font-semibold">Import Products</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">
           <p className="text-sm text-muted-foreground">
-            Upload a CSV file with the following columns: name, description, barcode, sku, categoryId, 
-            supplierId, unit, price, currentStock, minStockLevel, maxStockLevel, reorderPoint, 
-            reorderQuantity, location
+            Upload a CSV file with your product data. Download the template below for the correct format.
           </p>
           <div className="flex items-center gap-4">
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              disabled={uploading}
-              className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
-            />
-            {uploading && <span>Uploading...</span>}
+            <Button variant="outline" onClick={downloadTemplate} className="gap-2">
+              <Download className="h-4 w-4" />
+              Download Template
+            </Button>
+            <div className="relative">
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleFileUpload}
+                disabled={uploading}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <Button disabled={uploading} className="gap-2">
+                <Upload className="h-4 w-4" />
+                {uploading ? "Uploading..." : "Upload CSV"}
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
