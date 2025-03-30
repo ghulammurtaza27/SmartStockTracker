@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { apiRequest } from '@/lib/api';
+import { uploadCSV } from '@/lib/api';
 
 export default function CSVUpload() {
   const [isDragging, setIsDragging] = useState(false);
@@ -41,11 +41,8 @@ export default function CSVUpload() {
   };
 
   const uploadFile = async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
-      await apiRequest('POST', '/api/products/import', formData);
+      await uploadCSV(file);
       toast({
         title: 'Success',
         description: 'Products imported successfully',
