@@ -68,9 +68,8 @@ export const products = pgTable("products", {
   reorder_point: real("reorder_point").default(0),
   reorder_quantity: real("reorder_quantity").default(0),
   location: text("location"),
-  expirationDate: date("expiration_date"),
+  expiration_date: date("expiration_date"),
   is_perishable: boolean("is_perishable").default(false),
-  storage_temp: text("storage_temp"),
   is_active: boolean("is_active").default(true),
 });
 
