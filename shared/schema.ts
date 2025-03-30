@@ -1,4 +1,3 @@
-
 import { pgTable, text, serial, integer, boolean, timestamp, real, jsonb, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -56,23 +55,23 @@ export const products = pgTable("products", {
   description: text("description"),
   barcode: text("barcode").unique(),
   sku: text("sku").unique(),
-  categoryId: integer("category_id").references(() => categories.id),
-  supplierId: integer("supplier_id").references(() => suppliers.id),
+  category_id: integer("category_id").references(() => categories.id),
+  supplier_id: integer("supplier_id").references(() => suppliers.id),
   unit: text("unit").default("each"),
   price: real("price").notNull(),
   salePrice: real("sale_price"),
   saleStartDate: date("sale_start_date"),
   saleEndDate: date("sale_end_date"),
-  currentStock: real("current_stock").notNull().default(0),
-  minStockLevel: real("min_stock_level").default(0),
-  maxStockLevel: real("max_stock_level"),
-  reorderPoint: real("reorder_point").default(0),
-  reorderQuantity: real("reorder_quantity").default(0),
+  current_stock: real("current_stock").notNull().default(0),
+  min_stock_level: real("min_stock_level").default(0),
+  max_stock_level: real("max_stock_level"),
+  reorder_point: real("reorder_point").default(0),
+  reorder_quantity: real("reorder_quantity").default(0),
   location: text("location"),
   expirationDate: date("expiration_date"),
-  isPerishable: boolean("is_perishable").default(false),
-  storageTemp: text("storage_temp"),
-  isActive: boolean("is_active").default(true),
+  is_perishable: boolean("is_perishable").default(false),
+  storage_temp: text("storage_temp"),
+  is_active: boolean("is_active").default(true),
 });
 
 // Inventory transactions
