@@ -20,9 +20,9 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   email: text("email").notNull(),
   role: text("role", { enum: ["admin", "department_head", "associate"] }).notNull().default("associate"),
-  departmentId: integer("department_id").references(() => departments.id),
-  contactPhone: text("contact_phone"),
-  emergencyContact: text("emergency_contact"),
+  department_id: integer("department_id").references(() => departments.id),
+  contact_phone: text("contact_phone"),
+  emergency_contact: text("emergency_contact"),
   shift: text("shift", { enum: ["morning", "afternoon", "night"] }),
 });
 
