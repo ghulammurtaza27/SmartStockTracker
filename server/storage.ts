@@ -240,9 +240,9 @@ export class DatabaseStorage implements IStorage {
       .from(products)
       .where(and(
         eq(products.isActive, true),
-        lt(products.currentStock, products.reorderPoint)
-      ))
-      .where(isNotNull(products.reorderPoint));
+        lt(products.currentStock, products.reorderPoint),
+        isNotNull(products.reorderPoint)
+      ));
   }
   
   // Transaction operations
