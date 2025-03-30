@@ -13,7 +13,7 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPg from "connect-pg-simple";
 import { db, pool } from "./db";
-import { eq, and, desc, lt, lte, sql } from "drizzle-orm";
+import { eq, and, desc, lt, lte, isNotNull } from "drizzle-orm";
 import "./types"; // Import type definitions
 
 // Memory store
@@ -240,10 +240,9 @@ export class DatabaseStorage implements IStorage {
       .from(products)
       .where(and(
         eq(products.isActive, true),
-        lt(products.currentStock, 
-          sql`COALESCE(${products.reorderPoint}, 0)`
-        )
-      ));
+        lt(products.currentStock, products.reorderPoint)
+      ))
+      .where(isNotNull(products.reorderPoint));
   }
   
   // Transaction operations
