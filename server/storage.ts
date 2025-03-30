@@ -13,7 +13,7 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPg from "connect-pg-simple";
 import { db, pool } from "./db";
-import { eq, and, desc, lt, lte } from "drizzle-orm";
+import { eq, and, desc, lt, lte, sql } from "drizzle-orm";
 import "./types"; // Import type definitions
 
 // Memory store
