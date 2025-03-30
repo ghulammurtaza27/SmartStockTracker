@@ -61,7 +61,6 @@ export const products = pgTable("products", {
   location: text("location"),
   isActive: boolean("is_active").default(true),
   discountPercentage: real("discount_percentage").default(0),
-  discountPercentage: real("discount_percentage").default(0),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({
