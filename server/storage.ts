@@ -250,8 +250,8 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(products.isActive, true),
-          lte(products.expiryDate, thresholdDate),
-          gt(products.expiryDate, new Date())
+          products.expiryDate.isNotNull(),
+          lte(products.expiryDate, thresholdDate)
         )
       );
   }
