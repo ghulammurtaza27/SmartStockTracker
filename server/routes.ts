@@ -8,13 +8,15 @@ import {
   insertPurchaseOrderSchema,
   insertPurchaseOrderItemSchema,
   insertSupplierSchema,
-  insertCategorySchema
+  insertCategorySchema,
+  insertDepartmentSchema
 } from "@shared/schema";
 import { generateOrderNumber } from "./utils";
 import { forecastDemand } from "./forecast";
 import multer from "multer";
 import { parse } from "csv-parse";
 import { format } from "date-fns";
+import fs from 'fs';
 
 const upload = multer({ dest: "uploads/" });
 
@@ -28,9 +30,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const records = [];
       const parser = parse({ columns: true, trim: true });
-      
+
       const fileStream = fs.createReadStream(req.file.path);
-      
+
       for await (const record of fileStream.pipe(parser)) {
         const product = {
           name: record.name,
@@ -48,15 +50,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           reorderQuantity: record.reorderQuantity ? parseFloat(record.reorderQuantity) : null,
           location: record.location || null,
           expiryDate: record.expiryDate ? new Date(record.expiryDate) : null,
+          departmentId: record.departmentId ? parseInt(record.departmentId) : null, // Add departmentId
         };
-        
+
         const validatedData = insertProductSchema.parse(product);
         records.push(await storage.createProduct(validatedData));
       }
-      
+
       // Clean up uploaded file
       fs.unlinkSync(req.file.path);
-      
+
       res.status(201).json({ 
         message: `Successfully imported ${records.length} products`,
         products: records 
@@ -71,7 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const daysThreshold = parseInt(req.query.days as string) || 30;
     const thresholdDate = new Date();
     thresholdDate.setDate(thresholdDate.getDate() + daysThreshold);
-    
+
     const products = await storage.getProductsNearExpiry(thresholdDate);
     res.json(products);
   });
@@ -112,7 +115,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Products API
   app.get("/api/products", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
     const products = await storage.listProducts();
+
+    // Filter products based on user role and department
+    if (req.user.role !== 'admin') {
+      const filteredProducts = products.filter(p => p.departmentId === req.user.departmentId);
+      return res.json(filteredProducts);
+    }
+
     res.json(products);
   });
 
@@ -124,11 +138,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/products/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     const product = await storage.getProduct(id);
-    
+
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
-    
+
     res.json(product);
   });
 
@@ -149,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!product) {
         return res.status(404).json({ error: "Product not found" });
       }
-      
+
       const updatedProduct = await storage.updateProduct(id, req.body);
       res.json(updatedProduct);
     } catch (error) {
@@ -161,11 +175,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/scan/:barcode", async (req, res) => {
     const barcode = req.params.barcode;
     const product = await storage.getProductByBarcode(barcode);
-    
+
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
-    
+
     res.json(product);
   });
 
@@ -196,13 +210,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/purchase-orders/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     const order = await storage.getPurchaseOrder(id);
-    
+
     if (!order) {
       return res.status(404).json({ error: "Purchase order not found" });
     }
-    
+
     const items = await storage.listPurchaseOrderItems(id);
-    
+
     res.json({
       ...order,
       items
@@ -223,16 +237,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const orderId = parseInt(req.params.id);
       const order = await storage.getPurchaseOrder(orderId);
-      
+
       if (!order) {
         return res.status(404).json({ error: "Purchase order not found" });
       }
-      
+
       const validatedData = insertPurchaseOrderItemSchema.parse({
         ...req.body,
         purchaseOrderId: orderId
       });
-      
+
       const item = await storage.createPurchaseOrderItem(validatedData);
       res.status(201).json(item);
     } catch (error) {
@@ -243,18 +257,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/purchase-orders/:id/status", async (req, res) => {
     const id = parseInt(req.params.id);
     const { status } = req.body;
-    
+
     if (!status) {
       return res.status(400).json({ error: "Status is required" });
     }
-    
+
     try {
       const updatedOrder = await storage.updatePurchaseOrderStatus(id, status);
-      
+
       if (!updatedOrder) {
         return res.status(404).json({ error: "Purchase order not found" });
       }
-      
+
       res.json(updatedOrder);
     } catch (error) {
       res.status(400).json({ error: "Invalid status update" });
@@ -265,27 +279,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/forecast/:productId", async (req, res) => {
     const productId = parseInt(req.params.productId);
     const product = await storage.getProduct(productId);
-    
+
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
-    
+
     const existingForecast = await storage.getProductForecast(productId);
-    
+
     // If we have recent forecast data, return it
     if (existingForecast.length > 0) {
       res.json(existingForecast);
     } else {
       // Otherwise generate a new forecast
       const transactions = await storage.listTransactions(productId);
-      
+
       const historicalDemand = transactions
         .filter(t => t.transactionType === "sale")
         .map(t => ({ date: t.transactionDate, demand: t.quantity }));
-      
+
       try {
         const forecast = forecastDemand(productId, historicalDemand);
-        
+
         // Save the forecast
         for (const day of forecast) {
           await storage.createForecastData({
@@ -295,7 +309,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             modelParameters: { method: "moving_average", confidence: 0.8 }
           });
         }
-        
+
         res.json(forecast);
       } catch (error) {
         res.status(500).json({ error: "Failed to generate forecast" });
@@ -308,31 +322,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Get all products below reorder point
       const lowStockProducts = await storage.getProductsWithLowStock();
-      
+
       if (lowStockProducts.length === 0) {
         return res.json({ message: "No products need replenishment" });
       }
-      
+
       // Group by supplier
       const supplierGroups = new Map();
-      
+
       for (const product of lowStockProducts) {
         if (!product.supplierId) continue;
-        
+
         if (!supplierGroups.has(product.supplierId)) {
           supplierGroups.set(product.supplierId, []);
         }
-        
+
         supplierGroups.get(product.supplierId).push(product);
       }
-      
+
       // Create purchase orders by supplier
       const createdOrders = [];
-      
+
       for (const [supplierId, products] of supplierGroups.entries()) {
         const supplier = await storage.getSupplier(supplierId);
         if (!supplier) continue;
-        
+
         // Create a new purchase order
         const order = await storage.createPurchaseOrder({
           supplierId,
@@ -342,13 +356,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           isAutomated: true,
           userId: req.user?.id || 1 // Default to admin if not authenticated
         });
-        
+
         // Add items to the order
         for (const product of products) {
           const orderQuantity = product.reorderQuantity || 
                                (product.maxStockLevel - product.currentStock) || 
                                10; // Default if no reorder quantity set
-          
+
           await storage.createPurchaseOrderItem({
             purchaseOrderId: order.id,
             productId: product.id,
@@ -357,10 +371,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             totalPrice: orderQuantity * product.price
           });
         }
-        
+
         createdOrders.push(order);
       }
-      
+
       res.status(201).json({ 
         message: `Created ${createdOrders.length} purchase orders for ${lowStockProducts.length} products`,
         orders: createdOrders
@@ -377,14 +391,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const lowStockCount = products.filter(p => p.currentStock <= p.reorderPoint).length;
       const outOfStockCount = products.filter(p => p.currentStock === 0).length;
       const healthyStockCount = products.filter(p => p.currentStock > p.reorderPoint).length;
-      
+
       const totalValue = products.reduce((sum, p) => sum + (p.currentStock * p.price), 0);
-      
+
       const orders = await storage.listPurchaseOrders();
       const pendingOrdersCount = orders.filter(o => o.status === "pending").length;
       const inProgressOrdersCount = orders.filter(o => o.status === "in_progress").length;
       const automatedOrdersCount = orders.filter(o => o.isAutomated).length;
-      
+
       res.json({
         totalProducts: products.length,
         lowStockCount,
@@ -399,6 +413,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to generate analytics" });
     }
   });
+
+  // Department management routes
+  app.get("/api/departments", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    const departments = await storage.listDepartments();
+    res.json(departments);
+  });
+
+  app.post("/api/departments", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    try {
+      const validatedData = insertDepartmentSchema.parse(req.body);
+      const department = await storage.createDepartment(validatedData);
+      res.status(201).json(department);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid department data" });
+    }
+  });
+
 
   const httpServer = createServer(app);
   return httpServer;

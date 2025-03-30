@@ -3,13 +3,24 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // User table with role-based access
+export const departments = pgTable("departments", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  description: text("description"),
+});
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   name: text("name").notNull(),
   email: text("email").notNull(),
-  role: text("role", { enum: ["admin", "manager", "associate"] }).notNull().default("associate"),
+  role: text("role", { enum: ["admin", "department_head", "associate"] }).notNull().default("associate"),
+  departmentId: integer("department_id").references(() => departments.id),
+});
+
+export const insertDepartmentSchema = createInsertSchema(departments).omit({
+  id: true,
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({

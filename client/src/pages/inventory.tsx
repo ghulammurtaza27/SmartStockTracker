@@ -36,6 +36,14 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
     automatedOrdersCount: number;
   }
 
+  // Define Product type (add departmentId)
+  interface Product {
+    id: number;
+    name: string;
+    departmentId: number; // Added department ID
+    // ... other product properties
+  }
+
   // Get analytics summary
   const { data: inventorySummary } = useQuery<InventorySummary>({
     queryKey: ["/api/analytics/inventory-summary"],
@@ -62,6 +70,22 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
     return <CSVUpload />;
   };
 
+  // Fetch products with role-based filtering
+  const { data: products, isLoading } = useQuery<Product[]>({
+    queryKey: ["/api/products", user.role, user.departmentId],
+    queryFn: () => fetch(`/api/products`).then(res => res.json()),
+    select: (data) => {
+      if (user.role === 'admin') {
+        return data;
+      } else if (user.role === 'departmentHead') {
+        return data.filter(p => p.departmentId === user.departmentId);
+      } else { // Assuming 'departmentAssociate' or other roles
+        // More complex filtering logic might be needed here based on specific permissions.  
+        //  This requires a more detailed specification of associate permissions.
+        return data.filter(p => p.departmentId === user.departmentId);
+      }
+    },
+  });
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -152,7 +176,7 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
           </div>
 
           {/* Inventory Table */}
-          <InventoryTable />
+          <InventoryTable products={products} isLoading={isLoading} /> {/* Pass products to InventoryTable */}
         </div>
       </div>
 
