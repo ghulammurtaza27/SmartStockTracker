@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@shared/schema";
 
+import CSVUpload from '@/components/inventory/csv-upload';
+
 type InventoryPageProps = {
   user: User;
   onLogout: () => Promise<void>;
@@ -55,8 +57,6 @@ export default function InventoryPage({ user, onLogout }: InventoryPageProps) {
       });
     },
   });
-
-  import CSVUpload from '@/components/inventory/csv-upload';
 
   const renderCSVUpload = () => {
     return <CSVUpload />;
