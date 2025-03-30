@@ -236,13 +236,12 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getProductsWithLowStock(): Promise<Product[]> {
-    return await db.select().from(products)
-      .where(
-        and(
-          eq(products.isActive, true),
-          lt(products.currentStock, products.reorderPoint)
-        )
-      );
+    return await db.select()
+      .from(products)
+      .where(and(
+        eq(products.isActive, true),
+        lt(products.currentStock, products.reorderPoint || 0)
+      ));
   }
   
   // Transaction operations
