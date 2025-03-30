@@ -1,14 +1,19 @@
-import { pgTable, text, serial, integer, boolean, timestamp, real, jsonb } from "drizzle-orm/pg-core";
+
+import { pgTable, text, serial, integer, boolean, timestamp, real, jsonb, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// User table with role-based access
+// Departments (e.g., Produce, Dairy, Meat, etc.)
 export const departments = pgTable("departments", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
   description: text("description"),
+  managerId: integer("manager_id"),
+  locationArea: text("location_area"),
+  temperatureRequirement: text("temperature_requirement"),
 });
 
+// User table with role-based access
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
@@ -17,28 +22,20 @@ export const users = pgTable("users", {
   email: text("email").notNull(),
   role: text("role", { enum: ["admin", "department_head", "associate"] }).notNull().default("associate"),
   departmentId: integer("department_id").references(() => departments.id),
+  contactPhone: text("contact_phone"),
+  emergencyContact: text("emergency_contact"),
+  shift: text("shift", { enum: ["morning", "afternoon", "night"] }),
 });
 
-export const insertDepartmentSchema = createInsertSchema(departments).omit({
-  id: true,
-});
-
-export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
-});
-
-// Product categories
+// Product categories within departments
 export const categories = pgTable("categories", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
   description: text("description"),
+  departmentId: integer("department_id").references(() => departments.id),
 });
 
-export const insertCategorySchema = createInsertSchema(categories).omit({
-  id: true,
-});
-
-// Suppliers for products
+// Suppliers
 export const suppliers = pgTable("suppliers", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -46,11 +43,10 @@ export const suppliers = pgTable("suppliers", {
   contactEmail: text("contact_email"),
   contactPhone: text("contact_phone"),
   address: text("address"),
-  leadTime: integer("lead_time").default(1), // in days
-});
-
-export const insertSupplierSchema = createInsertSchema(suppliers).omit({
-  id: true,
+  leadTime: integer("lead_time").default(1),
+  preferredDeliveryTime: text("preferred_delivery_time"),
+  paymentTerms: text("payment_terms"),
+  rating: integer("rating"),
 });
 
 // Product inventory
@@ -62,35 +58,36 @@ export const products = pgTable("products", {
   sku: text("sku").unique(),
   categoryId: integer("category_id").references(() => categories.id),
   supplierId: integer("supplier_id").references(() => suppliers.id),
-  unit: text("unit").default("each"), // e.g., each, kg, liter
+  unit: text("unit").default("each"),
   price: real("price").notNull(),
+  salePrice: real("sale_price"),
+  saleStartDate: date("sale_start_date"),
+  saleEndDate: date("sale_end_date"),
   currentStock: real("current_stock").notNull().default(0),
   minStockLevel: real("min_stock_level").default(0),
   maxStockLevel: real("max_stock_level"),
   reorderPoint: real("reorder_point").default(0),
   reorderQuantity: real("reorder_quantity").default(0),
   location: text("location"),
+  expirationDate: date("expiration_date"),
+  isPerishable: boolean("is_perishable").default(false),
+  storageTemp: text("storage_temp"),
   isActive: boolean("is_active").default(true),
 });
 
-export const insertProductSchema = createInsertSchema(products).omit({
-  id: true,
-});
-
-// Inventory transactions (e.g., stock receipts, sales)
+// Inventory transactions
 export const transactions = pgTable("transactions", {
   id: serial("id").primaryKey(),
   productId: integer("product_id").references(() => products.id),
   quantity: real("quantity").notNull(),
-  transactionType: text("transaction_type", { enum: ["receive", "sale", "adjustment", "count"] }).notNull(),
+  transactionType: text("transaction_type", { 
+    enum: ["receive", "sale", "adjustment", "count", "waste", "return"] 
+  }).notNull(),
   transactionDate: timestamp("transaction_date").defaultNow(),
   notes: text("notes"),
   userId: integer("user_id").references(() => users.id),
-});
-
-export const insertTransactionSchema = createInsertSchema(transactions).omit({
-  id: true,
-  transactionDate: true,
+  reason: text("reason"),
+  batchNumber: text("batch_number"),
 });
 
 // Purchase orders
@@ -107,12 +104,8 @@ export const purchaseOrders = pgTable("purchase_orders", {
   notes: text("notes"),
   isAutomated: boolean("is_automated").default(false),
   userId: integer("user_id").references(() => users.id),
-});
-
-export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrders).omit({
-  id: true,
-  orderDate: true,
-  orderNumber: true,
+  deliveryInstructions: text("delivery_instructions"),
+  departmentId: integer("department_id").references(() => departments.id),
 });
 
 // Purchase order items
@@ -123,10 +116,7 @@ export const purchaseOrderItems = pgTable("purchase_order_items", {
   quantity: real("quantity").notNull(),
   unitPrice: real("unit_price").notNull(),
   totalPrice: real("total_price").notNull(),
-});
-
-export const insertPurchaseOrderItemSchema = createInsertSchema(purchaseOrderItems).omit({
-  id: true,
+  receivedQuantity: real("received_quantity").default(0),
 });
 
 // AI forecasting model data
@@ -138,13 +128,25 @@ export const forecastData = pgTable("forecast_data", {
   actualDemand: real("actual_demand"),
   accuracy: real("accuracy"),
   modelParameters: jsonb("model_parameters"),
+  weatherConditions: text("weather_conditions"),
+  seasonalFactor: real("seasonal_factor"),
 });
 
-export const insertForecastDataSchema = createInsertSchema(forecastData).omit({
-  id: true,
-});
+// Create insert schemas
+export const insertDepartmentSchema = createInsertSchema(departments).omit({ id: true });
+export const insertUserSchema = createInsertSchema(users).omit({ id: true });
+export const insertCategorySchema = createInsertSchema(categories).omit({ id: true });
+export const insertSupplierSchema = createInsertSchema(suppliers).omit({ id: true });
+export const insertProductSchema = createInsertSchema(products).omit({ id: true });
+export const insertTransactionSchema = createInsertSchema(transactions).omit({ id: true, transactionDate: true });
+export const insertPurchaseOrderSchema = createInsertSchema(purchaseOrders).omit({ id: true, orderDate: true, orderNumber: true });
+export const insertPurchaseOrderItemSchema = createInsertSchema(purchaseOrderItems).omit({ id: true });
+export const insertForecastDataSchema = createInsertSchema(forecastData).omit({ id: true });
 
-// Define types
+// Export types
+export type Department = typeof departments.$inferSelect;
+export type InsertDepartment = z.infer<typeof insertDepartmentSchema>;
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
